@@ -1,0 +1,15 @@
+Zivotno: Dog has: 4 legs and has a tail
+Zivotno: Ulicna Macka has: 4 legs and doesn't have a tail
+Zivotno: Ulicen maltezer has: 3 legs and doesn't have a tail
+Zivotno: Dog has: 4 legs and has a tail
+Zivotno: Ulicna Macka has: 4 legs and doesn't have a tail
+Zivotno: Ulicen maltezer has: 3 legs and doesn't have a tail
+Zivotno: Dog has: 4 legs and has a tail
+Zivotno: Ulicna Macka has: 4 legs and doesn't have a tail
+Zivotno: Ulicen maltezer has: 3 legs and doesn't have a tail
+Zivotno: Dog has: 4 legs and has a tail
+Zivotno: Ulicna Macka has: 4 legs and doesn't have a tail
+Zivotno: Ulicen maltezer has: 3 legs and doesn't have a tail
+Zivotno: Dog has: 4 legs and has a tail
+Zivotno: Ulicna Macka has: 4 legs and doesn't have a tail
+Zivotno: Ulicen maltezer has: 3 legs and doesn't have a tail
