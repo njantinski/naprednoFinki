@@ -1,15 +1,10 @@
-/*
 package mk.ukim.finki.napredno.lab.lab5;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Comparator;
 
 public class SchedulerTest {
 
@@ -118,4 +113,87 @@ public class SchedulerTest {
 
 // vashiot kod ovde
 
-*/
+class Timestamp<T> implements Comparable<Timestamp<?>>{
+    private final LocalDateTime ldt;
+    private final T element;
+
+    public Timestamp(LocalDateTime ldt, T element) {
+        this.ldt = ldt;
+        this.element = element;
+    }
+
+    public LocalDateTime getTime() {
+        return ldt;
+    }
+
+    public T getElement() {
+        return element;
+    }
+
+    @Override
+    public int compareTo(Timestamp<?> o) {
+        return ldt.compareTo(o.getTime());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Timestamp)) return false;
+        Timestamp<?> timestamp = (Timestamp<?>) o;
+        return ldt.equals(timestamp.ldt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ldt);
+    }
+
+    @Override
+    public String toString(){
+        return getTime().toString() + " " + element.toString();
+    }
+}
+
+
+class Scheduler<T>{
+    private List<Timestamp<T>> list;
+
+    public Scheduler(){
+        list = new ArrayList<>();
+    }
+
+
+    public void add(Timestamp<T> timestamp){
+        list.add(timestamp);
+    }
+
+    public void remove(Timestamp<T> t){
+        list.remove(t);
+
+    }
+
+    public Timestamp<T> next(){
+        list.sort(Comparator.naturalOrder());
+        return list.stream().filter(t -> t.getTime().compareTo(LocalDateTime.now()) == 1).findFirst().orElse(null);
+    }
+
+    public Timestamp<T> last(){
+        list.sort(Comparator.reverseOrder());
+        return list.stream().filter(t -> t.getTime().compareTo(LocalDateTime.now()) == -1).findFirst().orElse(null);
+    }
+
+
+    public  List<Timestamp<T>> getAll(LocalDateTime begin, LocalDateTime end){
+        List<Timestamp<T>> listToReturn = new ArrayList<>();
+
+        listToReturn = list.stream().filter(t -> t.getTime().compareTo(begin) >= 1).filter(t -> t.getTime().compareTo(end) <= -1).collect(Collectors.toList());
+
+
+
+        return listToReturn;
+    }
+
+
+
+
+}

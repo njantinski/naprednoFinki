@@ -1,3 +1,4 @@
+/*
 package mk.ukim.finki.napredno.ispitni;
 
 
@@ -154,3 +155,4 @@ public class DailyTemperatureTest {
     }
 }
 
+*/

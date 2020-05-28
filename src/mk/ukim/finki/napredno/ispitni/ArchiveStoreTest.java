@@ -5,6 +5,8 @@ package mk.ukim.finki.napredno.ispitni;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -55,6 +57,20 @@ public class ArchiveStoreTest {
 
 // вашиот код овде
 
+enum Type{
+    LockedArchive,
+    SpecialArchive
+}
+
+
+
+interface dateArchive{
+    void setDate(Date dateArchived);
+    Type getType();
+}
+
+
+
 class NonExistingItemException extends Exception{
     public NonExistingItemException(int id){
         super(String.format("Item with id %d doesn't exist",id));
@@ -62,10 +78,23 @@ class NonExistingItemException extends Exception{
 }
 
 
+class Convert{
+    public static ZonedDateTime getZonedDateTime(Date date){
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 
-interface dateArchive{
-    void setDate(Date dateArchived);
+        return zdt;
+    }
 }
+
+
+class GetDateFormat{
+    public static DateTimeFormatter getFormat(){
+        DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy");
+        return dtf;
+    }
+}
+
+
 
 abstract class Archive implements dateArchive{
     private int id;
@@ -91,14 +120,20 @@ abstract class Archive implements dateArchive{
 
 class LockedArchive extends Archive{
     private Date dateToOpen;
+    private Type type;
 
     public LockedArchive(int id, Date dateToOpen) {
         super(id);
         this.dateToOpen = dateToOpen;
+        type = Type.LockedArchive;
     }
 
     public Date getDateToOpen() {
         return dateToOpen;
+    }
+
+    public Type getType(){
+        return type;
     }
 
 
@@ -106,14 +141,26 @@ class LockedArchive extends Archive{
 
 class SpecialArchive extends Archive{
     private int maxOpen;
+    private Type type;
+    private int timesOppened;
 
     public SpecialArchive(int id, int maxOpen) {
         super(id);
         this.maxOpen = maxOpen;
+        this.type = Type.SpecialArchive;
+        this.timesOppened = 0;
     }
+
 
     public int getMaxOpen() {
         return maxOpen;
+    }
+    public int getTimesOppened(){
+        return this.timesOppened;
+    }
+
+    public Type getType(){
+        return this.type;
     }
 }
 
@@ -126,17 +173,25 @@ class ArchiveStore{
         messages = new ArrayList<>();
     }
 
+
     public void archiveItem(Archive item, Date date){
         archiveList.add(item);
         item.setDate(date);
         messages.add(archiveItemMessage(item,date));
     }
 
+
+
     private String archiveItemMessage(Archive item, Date date) {
         StringBuilder sb = new StringBuilder();
         sb.append("Item ").append(item.getId()).append(" archived at ").append(getDateString(date));
         return sb.toString();
+    }
 
+    private String getDateString(Date date) {
+        ZonedDateTime zdt = Convert.getZonedDateTime(date);
+        zdt.format(GetDateFormat.getFormat());
+        return zdt.toString();
     }
 
     public void openItem(int id, Date date) throws NonExistingItemException {
@@ -146,10 +201,65 @@ class ArchiveStore{
         messages.add(openItemMessage(id,date));
     }
 
-    private String openItemMessage(int id, Date date) {
 
+    private String openItemMessage(int id, Date date) {
+        Archive item = archiveList.stream().filter(a -> a.getId() == id).findFirst().orElse(null);
+        Type type = item.getType();
+        String message = "";
+
+        switch(type){
+            case LockedArchive:
+                message = lockedArchiveMessage((LockedArchive) item,date);
+                break;
+            case SpecialArchive:
+                message = speacialArchiveMessage((SpecialArchive) item);
+                break;
+        }
+
+        return message;
 
     }
+
+    private String speacialArchiveMessage(SpecialArchive item) {
+           if(item.getMaxOpen() == item.getTimesOppened()){
+               return String.format("Item %d cannot be opened more than %d times",item.getId(),item.getMaxOpen());
+           }
+           else{
+               return getStringDate(item.getId(), item.getDateArchived(), item);
+           }
+    }
+
+    private String lockedArchiveMessage(LockedArchive item, Date date) {
+        if(item.getDateToOpen().compareTo(date) <= -1){
+            return cantOpenMessage(item,date);
+        }
+        else{
+            return getStringDate(item.getId(), item.getDateArchived(), item);
+
+        }
+
+    }
+
+    private String cantOpenMessage(LockedArchive item, Date date) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Item %d cannot be opened before ", item.getId()));
+        ZonedDateTime zdt = Convert.getZonedDateTime(item.getDateArchived());
+
+        zdt.format(GetDateFormat.getFormat());
+        sb.append(zdt.toString());
+        return sb.toString();
+    }
+
+    private String getStringDate(int id, Date dateArchived, Archive item) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Item %d opened at ", id));
+        ZonedDateTime zdt = Convert.getZonedDateTime(dateArchived);
+        zdt.format(GetDateFormat.getFormat());
+        sb.append(zdt.toString());
+        return sb.toString();
+    }
+
+
 
     private Archive findArchiveById(int id){
         return archiveList.stream().filter(a -> a.getId() == id).findFirst().orElse(null);
