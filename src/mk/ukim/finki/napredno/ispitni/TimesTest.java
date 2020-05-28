@@ -79,18 +79,22 @@
 
         @Override
         public String convertToAMPM() {
+
             if(hour == 0){
-                return String.format("%2d:%02d AM",12,minutes);
+                return amPmString(12,minutes,"AM");
             }
             else if(hour < 12){
-                return String.format("%2d:%02d AM",hour,minutes);
+                return amPmString(hour,minutes,"AM");
             }
             else if(hour == 12){
-               return String.format("%2d:%02d PM",hour,minutes);
+               return amPmString(hour,minutes,"PM");
             }
             else{
-                return String.format("%2d:%02d PM",hour - 12,minutes);
+                return amPmString(hour-12,minutes,"PM");
             }
+        }
+        private String amPmString(int h,int m, String period){
+            return String.format("%2d:%02d %s",h,m,period);
         }
 
         @Override
