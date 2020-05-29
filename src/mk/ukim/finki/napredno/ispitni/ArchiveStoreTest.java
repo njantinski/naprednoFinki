@@ -1,6 +1,4 @@
-/*
-package mk.ukim.finki.napredno.ispitni;
-
+package mk.ukim.finki.napredno.ispitni;//package mk.ukim.finki.command;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -81,7 +79,6 @@ class NonExistingItemException extends Exception{
 class Convert{
     public static ZonedDateTime getZonedDateTime(Date date){
         ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
-
         return zdt;
     }
 }
@@ -89,8 +86,7 @@ class Convert{
 
 class GetDateFormat{
     public static DateTimeFormatter getFormat(){
-        DateTimeFormatter dtf =  DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy");
-        return dtf;
+        return  DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss Z yyyy");
     }
 }
 
@@ -158,6 +154,9 @@ class SpecialArchive extends Archive{
     public int getTimesOppened(){
         return this.timesOppened;
     }
+    public void increment(){
+        timesOppened++;
+    }
 
     public Type getType(){
         return this.type;
@@ -191,7 +190,7 @@ class ArchiveStore{
     private String getDateString(Date date) {
         ZonedDateTime zdt = Convert.getZonedDateTime(date);
         zdt.format(GetDateFormat.getFormat());
-        return zdt.toString();
+        return GetDateFormat.getFormat().format(zdt).replaceAll("\\+0000", "UTC");
     }
 
     public void openItem(int id, Date date) throws NonExistingItemException {
@@ -221,45 +220,39 @@ class ArchiveStore{
     }
 
     private String speacialArchiveMessage(SpecialArchive item) {
-           if(item.getMaxOpen() == item.getTimesOppened()){
-               return String.format("Item %d cannot be opened more than %d times",item.getId(),item.getMaxOpen());
-           }
-           else{
-               return getStringDate(item.getId(), item.getDateArchived(), item);
-           }
+        if(item.getMaxOpen() == item.getTimesOppened()){
+            return String.format("Item %d cannot be opened more than %d times",item.getId(),item.getMaxOpen());
+        }
+        else{
+            item.increment();
+            return getStringDate(item.getId(), item.getDateArchived(), item);
+        }
     }
 
     private String lockedArchiveMessage(LockedArchive item, Date date) {
-        if(item.getDateToOpen().compareTo(date) <= -1){
-            return cantOpenMessage(item,date);
+        if(item.getDateToOpen().compareTo(date) > -1){
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format("Item %d cannot be opened before ", item.getId()));
+            ZonedDateTime zdt = Convert.getZonedDateTime(item.getDateToOpen());
+
+            sb.append(GetDateFormat.getFormat().format(zdt).replaceAll("\\+0000", "UTC"));
+            return sb.toString();
         }
         else{
-            return getStringDate(item.getId(), item.getDateArchived(), item);
+            return getStringDate(item.getId(), item.getDateArchived(), (Archive)item);
 
         }
 
-    }
-
-    private String cantOpenMessage(LockedArchive item, Date date) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("Item %d cannot be opened before ", item.getId()));
-        ZonedDateTime zdt = Convert.getZonedDateTime(item.getDateArchived());
-
-        zdt.format(GetDateFormat.getFormat());
-        sb.append(zdt.toString());
-        return sb.toString();
     }
 
     private String getStringDate(int id, Date dateArchived, Archive item) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Item %d opened at ", id));
         ZonedDateTime zdt = Convert.getZonedDateTime(dateArchived);
-        zdt.format(GetDateFormat.getFormat());
-        sb.append(zdt.toString());
+        //zdt.format(GetDateFormat.getFormat());
+        sb.append(GetDateFormat.getFormat().format(zdt).replaceAll("\\+0000", "UTC"));
         return sb.toString();
     }
-
-
 
     private Archive findArchiveById(int id){
         return archiveList.stream().filter(a -> a.getId() == id).findFirst().orElse(null);
@@ -271,4 +264,4 @@ class ArchiveStore{
         return sb.toString();
     }
 }
-*/
+
