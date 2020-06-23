@@ -9,10 +9,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-*/
-/**
- * Partial exam II 2016/2017
- *//*
+
+
 
 public class FileSystemTest {
     public static void main(String[] args) {
@@ -128,10 +126,11 @@ class FileSystem{
       return folders.values().stream().flatMap(Collection::stream)
               .collect(Collectors
                       .groupingBy(File::getYear,Collectors
-                              .toCollection(() -> new TreeSet<>(comparator))));
+                              .toCollection(() -> new TreeSet<>( Comparator.comparing(File::getYear).thenComparing(File::getName).thenComparing(File::getSize)))));
     }
 
     public Map<String, Long> sizeByMonthAndDay(){
         return null;
     }
-}*/
+}
+*/
