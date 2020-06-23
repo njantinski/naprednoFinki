@@ -85,7 +85,7 @@ class MoviesList {
     List<Movie> byRating;
     List<Movie> byCoef;
 
-    private static final Comparator<Movie> compareByRating = Comparator.comparing(Movie::getRating).reversed();
+    private static final Comparator<Movie> compareByRating = Comparator.comparing(Movie::getRating).reversed().thenComparing(Movie::getTitle);
 
 
     public MoviesList(){
@@ -113,7 +113,7 @@ class MoviesList {
     public List<Movie> top10ByRatingCoef(){
        int maxRatings = byCoef.stream().mapToInt(movie -> movie.getNumRatings()).sum();
        byCoef.stream().forEach(movie -> movie.setCoef(maxRatings));
-       byCoef.sort(Comparator.comparing(Movie::getCoef).thenComparing(Movie::getNumRatings).thenComparing(Movie::getRating).reversed());
+       byCoef.sort(Comparator.comparing(Movie::getCoef).reversed().thenComparing(Movie::getNumRatings).thenComparing(Movie::getTitle));
        if(byCoef.size() < 10)
            return byCoef;
        else{
