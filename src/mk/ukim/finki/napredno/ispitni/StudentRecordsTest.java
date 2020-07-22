@@ -1,3 +1,4 @@
+/*
 package mk.ukim.finki.napredno.ispitni;
 
 import java.io.*;
@@ -5,9 +6,11 @@ import java.nio.Buffer;
 import java.util.*;
 import java.util.stream.IntStream;
 
+*/
 /**
  * January 2016 Exam problem 1
- */
+ *//*
+
 public class StudentRecordsTest {
     public static void main(String[] args) {
         System.out.println("=== READING RECORDS ===");
@@ -196,4 +199,4 @@ class StudentRecords{
 
 
 
-}
+}*/
