@@ -1,3 +1,4 @@
+/*
 package mk.ukim.finki.napredno.ispitni;//package mk.ukim.finki.command;
 
 import java.time.LocalDate;
@@ -265,3 +266,4 @@ class ArchiveStore{
     }
 }
 
+*/
