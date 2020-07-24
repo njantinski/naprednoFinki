@@ -90,7 +90,6 @@ class Receipt{
     private int id;
     private List<Item> items;
     private int totalSum;
-    private static DecimalFormat df = new DecimalFormat("0.00");
 
     public Receipt(int id) {
         this.id = id;
@@ -132,7 +131,7 @@ class Receipt{
 
     public String toString(){
 
-        return String.format("%d %d %.2f",id,totalSum,taxReturn());
+        return String.format("%d %d %f",id,totalSum,taxReturn());
     }
 }
 
